@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import csv
-
+# import torchvision as tv
 
 
 # split a multivariate sequence into samples
@@ -30,12 +30,13 @@ class LSTM(nn.Module):
     def __init__(self, input_size, hidden_size=100):
         super().__init__()
         self.output_size = 1
-        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
-        # self.gru = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
+        # self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
+        self.gru = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
         self.fc = nn.Linear(hidden_size, self.output_size)
             
     def forward(self,x):
-        x, (h,c) = self.lstm(x)
+        # x, (h,c) = self.lstm(x)
+        x, h = self.gru(x)
         return self.fc(h)
 
 
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     # with open('NNPOC_v2.csv') as data:
         line_count=0
         for line in csv.reader(data):
-            if line_count != 0 and line_count<299:
+            if line_count != 0 and line_count<300:
                 # datos.append(line[3:])
                 # datos.append(list(line[i] for i in [6,9,12,15,18,19]))
                 datos.append(list(line[i] for i in [6,9,12,15,18]))
@@ -57,19 +58,19 @@ if __name__ == '__main__':
     # np.random.shuffle(datosA)
     
     # Prueba datos normales random
-    dataO = np.random.normal(0,1,(100,5))
-    datosA=dataO
+    # dataO = np.random.normal(0,1,(100,5))
+    # datosA=dataO
         
     N = len(datosA)
     n = 4
     
-    datosA_trn = datosA[:-N//n]
-    datosA_tst = datosA[-N//n:]
-    # datosA_trn = datosA[:-4]
-    # datosA_tst = datosA[-4:]
+    # datosA_trn = datosA[:-N//n]
+    # datosA_tst = datosA[-N//n:]
+    datosA_trn = datosA[:-2]
+    datosA_tst = datosA[-2:]
     
     # con cuántas filas se predice la siguiente
-    n_steps = 3
+    n_steps = 2
     
     
     # se separan los datos para aprendizaje supervisado.
@@ -88,7 +89,7 @@ if __name__ == '__main__':
     x_tst = torch.FloatTensor(X_tst).view(batch_size_tst,seq_len_tst,input_size)
     labels_tst = torch.FloatTensor(y_tst)
     
-    B_trn=64 #tamaño del batch
+    B_trn=128 #tamaño del batch
     trn_data = TensorDataset(x_trn, labels_trn)
     trn_load = DataLoader(trn_data, shuffle=True, batch_size=B_trn)
     B_tst=1
@@ -100,7 +101,7 @@ if __name__ == '__main__':
     costF = torch.nn.MSELoss() 
     optim = torch.optim.Adam(model.parameters(), lr=1e-2)
 
-    T = 500 #épocas de entrenamiento
+    T = 2000 #épocas de entrenamiento
     model.train()
     for t in range(T+1):
         for data, label in trn_load:
