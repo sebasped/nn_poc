@@ -50,7 +50,7 @@ class RNN(nn.Module):
 if __name__ == '__main__':
     
     datos =[]
-    # with open('NNPOC.txt') as data:
+    # with open('NNPOC.txt') as data: #datos sin columna oil tiempo anterior
     with open('NNPOC_v2.csv') as data:
         line_count=0
         for line in csv.reader(data):
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     costF = torch.nn.MSELoss() 
     optim = torch.optim.Adam(model.parameters())#, lr=1e-3)
 
-    T = 1000 #épocas de entrenamiento
+    T = 2000 #épocas de entrenamiento
     model.train()
     for t in range(T+1):
         for data, label in trn_load:
@@ -181,18 +181,18 @@ if __name__ == '__main__':
                 print('ground truth:', label)
             # print('Error: ', errorEste)
             errores.append(errorEste)
-        print('Error promedio %: ', np.array(errores).mean())
-        print('Error desvío: ', np.array(errores).std())
-        # print('Error máximo %: ', np.array(errores).max())
-        plt.hist(errores,bins=50)
-        # plt.show()
-        # plt.plot(datosAorig[:,-1][::-1])
-        # predicciones = np.array(predicciones)
-        # plt.plot(predicciones[::-1])
-        # plt.ylim(0, 15000)
-        # plt.plot(np.concatenate((y_trn,y_tst))*std+mean)
-        # plt.plot(np.concatenate((y_trn*std+mean,predicciones)))
-        plt.plot(predicciones, label='predicción')
-        plt.plot(targets, label='target')
-        plt.legend()
-        # plt.show()
+    print('Error promedio %: ', np.array(errores).mean())
+    print('Error desvío: ', np.array(errores).std())
+    # print('Error máximo %: ', np.array(errores).max())
+    plt.hist(errores,bins=50)
+    # plt.show()
+    # plt.plot(datosAorig[:,-1][::-1])
+    # predicciones = np.array(predicciones)
+    # plt.plot(predicciones[::-1])
+    # plt.ylim(0, 15000)
+    # plt.plot(np.concatenate((y_trn,y_tst))*std+mean)
+    # plt.plot(np.concatenate((y_trn*std+mean,predicciones)))
+    plt.plot(predicciones, label='predicción')
+    plt.plot(targets, label='target')
+    plt.legend()
+    # plt.show()
