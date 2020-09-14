@@ -82,7 +82,7 @@ if __name__ == '__main__':
     # datosA_trn = datosA[:-2]
     # datosA_tst = datosA[-2:]
     
-    # con cuántas filas se predice la siguiente
+    # con cuántas filas se predice el target
     n_steps = 3
     
     # se separan los datos para aprendizaje supervisado.
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     costF = torch.nn.MSELoss() 
     optim = torch.optim.Adam(model.parameters())#, lr=1e-3)
 
-    T = 500 #épocas de entrenamiento
+    T = 1000 #épocas de entrenamiento
     model.train()
     for t in range(T+1):
         for data, label in trn_load:
@@ -176,6 +176,9 @@ if __name__ == '__main__':
             label = label.squeeze()*std+mean
             targets.append(label.item())
             errorEste = abs(out.item()-label.item())/out.item()
+            if errorEste>0.5:
+                print('modelo :', out)
+                print('ground truth:', label)
             # print('Error: ', errorEste)
             errores.append(errorEste)
         print('Error promedio %: ', np.array(errores).mean())
