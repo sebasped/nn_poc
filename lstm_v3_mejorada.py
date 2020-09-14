@@ -33,7 +33,9 @@ class RNN(nn.Module):
     def __init__(self, input_size, hidden_size=100):
         super().__init__()
         self.output_size = 1
-        self.rnn = nn.RNN(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
+        # self.activation = 'relu'
+        self.activation = 'tanh'
+        self.rnn = nn.RNN(input_size=input_size, hidden_size=hidden_size, nonlinearity= self.activation, num_layers=1, batch_first=True, bidirectional=False)
         # self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
         # self.gru = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
         self.fc = nn.Linear(hidden_size, self.output_size)
@@ -55,6 +57,7 @@ if __name__ == '__main__':
             # if line_count != 0 and line_count<300: #solamente el primer pozo
             if line_count != 0:
                 # datos.append(line[3:])
+                # datos.append(line[4:])
                 datos.append(list(line[i] for i in [6,9,12,15,18,19])) #solamente agua+oil y oil tiempo anterior
                 # datos.append(list(line[i] for i in [6,9,12,15,18])) #solamente agua+oil
             line_count += 1
@@ -63,6 +66,8 @@ if __name__ == '__main__':
     # np.random.shuffle(datosA)
     mean = datosAorig.mean()
     std = datosAorig.std()
+    # mean = 0.0
+    # std = 1.0
     datosA = (datosAorig-mean)/std
     
     # Prueba datos normales random
@@ -122,7 +127,7 @@ if __name__ == '__main__':
     costF = torch.nn.MSELoss() 
     optim = torch.optim.Adam(model.parameters())#, lr=1e-3)
 
-    T = 1000 #épocas de entrenamiento
+    T = 500 #épocas de entrenamiento
     model.train()
     for t in range(T+1):
         for data, label in trn_load:
@@ -163,9 +168,9 @@ if __name__ == '__main__':
     # # #         # if data.shape[0]==16:
     # #         model.init_hidden(data.size(0))
             out = model(data)
-            print('TEST')
-            print('modelo :',out.squeeze()*std+mean)
-            print('ground truth:', label.squeeze()*std+mean)
+            # print('TEST')
+            # print('modelo :',out.squeeze()*std+mean)
+            # print('ground truth:', label.squeeze()*std+mean)
             out = out.squeeze()*std+mean
             predicciones.append(out.item())
             label = label.squeeze()*std+mean
