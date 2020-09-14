@@ -33,13 +33,15 @@ class RNN(nn.Module):
     def __init__(self, input_size, hidden_size=100):
         super().__init__()
         self.output_size = 1
+        self.rnn = nn.RNN(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
         # self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
-        self.gru = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
+        # self.gru = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=1, batch_first=True, bidirectional=False)
         self.fc = nn.Linear(hidden_size, self.output_size)
             
     def forward(self,x):
         # x, (h,c) = self.lstm(x)
-        x, h = self.gru(x)
+        # x, h = self.gru(x)
+        x, h = self.rnn(x)
         return self.fc(h)
 
 
@@ -50,8 +52,8 @@ if __name__ == '__main__':
     with open('NNPOC_v2.csv') as data:
         line_count=0
         for line in csv.reader(data):
-            if line_count != 0 and line_count<300: #solamente el primer pozo
-            # if line_count != 0:
+            # if line_count != 0 and line_count<300: #solamente el primer pozo
+            if line_count != 0:
                 # datos.append(line[3:])
                 datos.append(list(line[i] for i in [6,9,12,15,18,19])) #solamente agua+oil y oil tiempo anterior
                 # datos.append(list(line[i] for i in [6,9,12,15,18])) #solamente agua+oil
